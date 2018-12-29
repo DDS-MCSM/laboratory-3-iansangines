@@ -7,21 +7,57 @@
 #******************************************************************************#
 
 ## Crawling y Scrapping
+# install.packages("xml2")
+# install.packages("httr")
+# install.packages("tidyr")
+# install.packages("dplyr")
+# install.packages("ggplot2")
+# library("xml2")
+# library("httr")
+# library("tidyr")
+# library("dplyr")
+# library("ggplot2")
 
+ ### 1.1 Obtención de la página web
+url <- "https://www.mediawiki.org/wiki/MediaWiki"
+htmlpage <- xml2::read_html(url)
 
-### 1.1 Obtención de la página web
+### 1.2 Analisis de el contenido de la web  --------------------------------------------------------------------------------
+title <- xml2::xml_text(xml2::xml_find_all(htmlpage,"//title"))
 
-### 1.2 Analisis de el contenido de la web
+### 1.3.	Extracción de enlaces  -----------------------------------------------------------------------------------------
+linksContent <- xml2::xml_text(xml2::xml_find_all(htmlpage,"//a"))
+linksUrl <- xml2::xml_attr(xml2::xml_find_all(htmlpage,"//a"), "href")
+links <- data.frame(Link_Name = linksContent, Link_url = linksUrl,stringsAsFactors = FALSE) %>% tidyr::drop_na()
 
-### 1.3.	Extracción de enlaces
+### 1.4 Exploración de enlaces -----------------------------------------------------------------------------------------
+results <- data.frame(Link = character(), status_code = integer(), stringsAsFactors = FALSE)
+# Delete same page navigation ( eg. #resources)
+outterLinks <- dplyr::filter(links, !startsWith(links[,2],"#"))
 
-### 1.4 Exploración de enlaces
+for (rownum in 1:nrow(outterLinks)) {
+  linkToTest <- outterLinks[rownum,"Link_url"]
+  if (!grepl("^http",linkToTest)) {
+   linkToTest <- paste("https://www.mediawiki.org",linkToTest,sep = "")
 
-### Gráficos en R
+  }
+  message <- paste("Sending a request to ", linkToTest, sep = "")
+  print(message)
+  r <- httr::HEAD(linkToTest)
+  results <- rbind(results,data.frame(Link = linkToTest, status_code = r$status_code, stringsAsFactors = FALSE))
+  message <- paste("With status code: ", r$status_code, sep = "")
+  print(message)
+  Sys.sleep(1)
+}
 
-### 2.1 Histograma
+### Gráficos en R  -----------------------------------------------------------------------------------------
 
-### 2.2 Un gráfico de barras
+### 2.1 Histograma  -----------------------------------------------------------------------------------------
+links <- cbind(links,data.frame(is_outter = grepl("^http",links[,"Link_url"])))
+ggplot2::ggplot(links, ggplot2::aes(x = Link_url)) + ggplot2::geom_histogram()
 
-### 2.3 Pie Chart
+### 2.2 Un gráfico de barras  -----------------------------------------------------------------------------------------
+
+ggplot2::ggplot(links, ggplot2::aes(is_outter)) + ggplot2::geom_bar()
+### 2.3 Pie Chart  -----------------------------------------------------------------------------------------
 
