@@ -53,11 +53,10 @@ for (rownum in 1:nrow(outterLinks)) {
 ### Gráficos en R  -----------------------------------------------------------------------------------------
 
 ### 2.1 Histograma  -----------------------------------------------------------------------------------------
-links <- cbind(links,data.frame(is_outter = grepl("^http",links[,"Link_url"])))
-ggplot2::ggplot(links, ggplot2::aes(x = Link_url)) + ggplot2::geom_histogram()
+
 
 ### 2.2 Un gráfico de barras  -----------------------------------------------------------------------------------------
-
-ggplot2::ggplot(links, ggplot2::aes(is_outter)) + ggplot2::geom_bar()
+links <- cbind(links,data.frame(is_outter = (grepl("^http",links[,"Link_url"]) & !grepl("https:[/][/]www[.]mediawiki[.]org",links[,"Link_url"]))))
+ggplot2::ggplot(links, ggplot2::aes(is_outter)) + ggplot2::geom_bar() + ggplot2::scale_x_discrete("Other domains")
 ### 2.3 Pie Chart  -----------------------------------------------------------------------------------------
 
