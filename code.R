@@ -17,6 +17,7 @@
  library("tidyr")
  library("dplyr")
  library("ggplot2")
+ library("scales")
 
  ### 1.1 Obtención de la página web
 url <- "https://www.mediawiki.org/wiki/MediaWiki"
@@ -59,5 +60,7 @@ for (rownum in 1:nrow(outterLinks)) {
 links <- cbind(links,data.frame(is_outter = (grepl("^http",links[,"Link_url"]) & !grepl("https:[/][/]www[.]mediawiki[.]org",links[,"Link_url"]))))
 ggplot2::ggplot(links, ggplot2::aes(is_outter)) + ggplot2::geom_bar() + ggplot2::scale_x_discrete("Other domains")
 ### 2.3 Pie Chart  -----------------------------------------------------------------------------------------
+results_resumee <- as.data.frame(results %>% count(status_code))
+results_resumee[,'status_code'] <- factor(results_resumee[,'status_code']) #convert to factor value
+ggplot2::ggplot(results_resumee, aes(x = "", y = n ,fill = status_code)) + geom_bar(width = 1,stat = "identity") + coord_polar("y", start = 0) + geom_text(aes(y = n/2 + c(0, cumsum(n)[-length(n)]), label = percent(n/sum(n))), size=5)
 
-ggplot2::ggplot(links, aes(status_code))
