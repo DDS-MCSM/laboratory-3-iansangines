@@ -12,11 +12,11 @@
 # install.packages("tidyr")
 # install.packages("dplyr")
 # install.packages("ggplot2")
-# library("xml2")
-# library("httr")
-# library("tidyr")
-# library("dplyr")
-# library("ggplot2")
+ library("xml2")
+ library("httr")
+ library("tidyr")
+ library("dplyr")
+ library("ggplot2")
 
  ### 1.1 Obtención de la página web
 url <- "https://www.mediawiki.org/wiki/MediaWiki"
@@ -60,3 +60,4 @@ links <- cbind(links,data.frame(is_outter = (grepl("^http",links[,"Link_url"]) &
 ggplot2::ggplot(links, ggplot2::aes(is_outter)) + ggplot2::geom_bar() + ggplot2::scale_x_discrete("Other domains")
 ### 2.3 Pie Chart  -----------------------------------------------------------------------------------------
 
+ggplot2::ggplot(links, aes(status_code))
