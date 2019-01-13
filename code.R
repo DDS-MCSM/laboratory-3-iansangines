@@ -54,7 +54,8 @@ for (rownum in 1:nrow(outterLinks)) {
 ### Gráficos en R  -----------------------------------------------------------------------------------------
 
 ### 2.1 Histograma  -----------------------------------------------------------------------------------------
-
+histogram <- ggplot(links, aes(Link_url))
+histogram + geom_histogram(stat="count") + facet_grid(~is_outter)
 
 ### 2.2 Un gráfico de barras  -----------------------------------------------------------------------------------------
 links <- cbind(links,data.frame(is_outter = (grepl("^http",links[,"Link_url"]) & !grepl("https:[/][/]www[.]mediawiki[.]org",links[,"Link_url"]))))
